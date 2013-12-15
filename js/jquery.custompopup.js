@@ -4,7 +4,6 @@
 var popupExist = false;
 (function ($) {
 	$.fn.customPopup = function (content, params) {
-		$(content).css({display: "none"});
 		var options = {
 			customClass    : null,
 			opacityOverlay : 0.65,
@@ -19,6 +18,7 @@ var popupExist = false;
 		$.extend(options, params);
 		var errorMsg = "An error occured";
 		var ajaxContentName = "ajaxContent";
+		var htmlContentName = "htmlContent";
 		var appendPopup = "body";
 		var popupName = "custom-popup";
 		var overlayName = popupName + "-overlay";
@@ -27,6 +27,7 @@ var popupExist = false;
 		var overlay = "#" + overlayName;
 		var popupContainer = "." + popupContainerName;
 		var ajaxContent = "#" + ajaxContentName;
+		var htmlContent = "#" + htmlContentName;
 		var closeButtonName = options.closeButtonName;
 		var $customPopup = this;
 		this.close = function () {
@@ -41,12 +42,12 @@ var popupExist = false;
 			$(popup).css({top: getPopupTop(popupContent), left: getPopupLeft(popupContent) }).stop(true, true).fadeTo(options.duration, 1);
 		}
 		var getPopupTop = function (popupContent) {
-			var val = ((((window.innerHeight / 2) - (popupContent.outerHeight() / 2)) * 100) / (window.innerHeight));
-			return val.toFixed(2) + '%';
+			var height = ((((window.innerHeight / 2) - (popupContent.outerHeight() / 2)) * 100) / (window.innerHeight));
+			return height.toFixed(2) + '%';
 		}
 		var getPopupLeft = function (popupContent) {
-			var val = ((((window.innerWidth / 2) - ((popupContent.outerWidth()) / 2)) * 100) / (window.innerWidth));
-			return val.toFixed(2) + "%";
+			var width = ((((window.innerWidth / 2) - ((popupContent.outerWidth()) / 2)) * 100) / (window.innerWidth));
+			return width.toFixed(2) + "%";
 		}
 		var getCssPopup = function () {
 			$(overlay).css({
@@ -84,31 +85,51 @@ var popupExist = false;
 			$(appendPopup).append("<div id='" + popupName + "' style='display:none;'></div>");
 			$(appendPopup).append("<div id='" + overlayName + "' style='display:none;'></div>");
 		}
+		var isHTML = function (str) {
+			return !!$(str)[0];
+		}
+		var isSelector = function (str) {
+			if (str[0] != "#" && str[0] != ".") {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		var initPopup = function () {
+			if (!popupExist) {
+				createDiv();
+				popupExist = true
+			}
+			return;
+		}
 		this.open = function () {
-			var popupContent, isExternalContent;
-			if (content[0] != "#" && content[0] != ".") {
-				if (!popupExist) {
-					createDiv();
-					popupExist = true
-				}
+			var popupContent, isAjaxContent, isHtmlContent;
+			if (isHTML(content) && !isSelector(content)) {
+				initPopup();
+				$(popup).append("<div id='" + htmlContentName + "'></div>");
+				$(htmlContent).append(content);
+				popupContent = $(htmlContent);
+				isHtmlContent = true;
+				isAjaxContent = false;
+			} else if (!isSelector(content) && !isHTML(content)) {
+				initPopup();
 				$(popup).append("<div id='" + ajaxContentName + "'></div>");
-				$(ajaxContent).load(content, function (response, status, xhr) {
+				$(ajaxContent).load(content,function (response, status, xhr) {
 					if (status == "error") {
 						$(this).append('<p>' + errorMsg + " : " + xhr.status + " " + xhr.statusText + '</p>');
 					}
 				}).addClass(popupContainerName);
 				popupContent = $(ajaxContent);
-				isExternalContent = true;
-			} else {
+				isHtmlContent = false;
+				isAjaxContent = true;
+			} else if (isSelector(content)) {
+				$(content).css({display: "none"});
 				popupContent = $(content);
-				isExternalContent = false;
+				isAjaxContent = isHtmlContent = false;
 			}
 			if (popupContent.length > 0) {
-				if (!popupExist) {
-					createDiv();
-					popupExist = true;
-				}
-				if (jQuery(popup + ' ' + content).length == 0 && !isExternalContent) {
+				initPopup();
+				if (!isAjaxContent && !isHtmlContent && $(popup + ' ' + content).length == 0) {
 					popupContent.clone().appendTo(popup).addClass(popupContainerName);
 				}
 				$(popup).append('<span class="' + closeButtonName + '">X</span>');
