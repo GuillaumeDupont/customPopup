@@ -3,8 +3,8 @@
  */
 var popupExist = false;
 (function ($) {
-	$.fn.customPopup = function (divId, params) {
-		$(divId).css({display: "none"});
+	$.fn.customPopup = function (content, params) {
+		$(content).css({display: "none"});
 		var options = {
 			customClass    : null,
 			opacityOverlay : 0.65,
@@ -17,6 +17,8 @@ var popupExist = false;
 			background     : "#ffffff"
 		}
 		$.extend(options, params);
+		var errorMsg = "An error occured";
+		var ajaxContentName = "ajaxContent";
 		var appendPopup = "body";
 		var popupName = "custom-popup";
 		var overlayName = popupName + "-overlay";
@@ -24,6 +26,7 @@ var popupExist = false;
 		var popup = "#" + popupName;
 		var overlay = "#" + overlayName;
 		var popupContainer = "." + popupContainerName;
+		var ajaxContent = "#" + ajaxContentName;
 		var closeButtonName = options.closeButtonName;
 		var $customPopup = this;
 		this.close = function () {
@@ -38,10 +41,12 @@ var popupExist = false;
 			$(popup).css({top: getPopupTop(popupContent), left: getPopupLeft(popupContent) }).stop(true, true).fadeTo(options.duration, 1);
 		}
 		var getPopupTop = function (popupContent) {
-			return ($(window).height() / 2) - (popupContent.outerHeight() / 2);
+			var val = ((((window.innerHeight / 2) - (popupContent.outerHeight() / 2)) * 100) / (window.innerHeight));
+			return val.toFixed(2) + '%';
 		}
 		var getPopupLeft = function (popupContent) {
-			return ($(window).width() / 2) - ((popupContent.outerWidth()) / 2);
+			var val = ((((window.innerWidth / 2) - ((popupContent.outerWidth()) / 2)) * 100) / (window.innerWidth));
+			return val.toFixed(2) + "%";
 		}
 		var getCssPopup = function () {
 			$(overlay).css({
@@ -75,15 +80,35 @@ var popupExist = false;
 				position: "relative"
 			});
 		}
+		var createDiv = function () {
+			$(appendPopup).append("<div id='" + popupName + "' style='display:none;'></div>");
+			$(appendPopup).append("<div id='" + overlayName + "' style='display:none;'></div>");
+		}
 		this.open = function () {
-			var popupContent = $(divId);
+			var popupContent, isExternalContent;
+			if (content[0] != "#" && content[0] != ".") {
+				if (!popupExist) {
+					createDiv();
+					popupExist = true
+				}
+				$(popup).append("<div id='" + ajaxContentName + "'></div>");
+				$(ajaxContent).load(content, function (response, status, xhr) {
+					if (status == "error") {
+						$(this).append('<p>' + errorMsg + " : " + xhr.status + " " + xhr.statusText + '</p>');
+					}
+				}).addClass(popupContainerName);
+				popupContent = $(ajaxContent);
+				isExternalContent = true;
+			} else {
+				popupContent = $(content);
+				isExternalContent = false;
+			}
 			if (popupContent.length > 0) {
 				if (!popupExist) {
-					$(appendPopup).append("<div id='" + popupName + "' style='display:none;'></div>");
-					$(appendPopup).append("<div id='" + overlayName + "' style='display:none;'></div>");
+					createDiv();
 					popupExist = true;
 				}
-				if (jQuery(popup + ' ' + divId).length == 0) {
+				if (jQuery(popup + ' ' + content).length == 0 && !isExternalContent) {
 					popupContent.clone().appendTo(popup).addClass(popupContainerName);
 				}
 				$(popup).append('<span class="' + closeButtonName + '">X</span>');
