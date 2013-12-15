@@ -95,6 +95,9 @@ var popupExist = false;
 				return true;
 			}
 		}
+		if (isSelector(content)) {
+			$(content).css({display: "none"});
+		}
 		var initPopup = function () {
 			if (!popupExist) {
 				createDiv();
@@ -123,7 +126,6 @@ var popupExist = false;
 				isHtmlContent = false;
 				isAjaxContent = true;
 			} else if (isSelector(content)) {
-				$(content).css({display: "none"});
 				popupContent = $(content);
 				isAjaxContent = isHtmlContent = false;
 			}
