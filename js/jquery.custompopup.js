@@ -30,6 +30,9 @@ var popupExist = false;
 		var htmlContent = "#" + htmlContentName;
 		var closeButtonName = options.closeButtonName;
 		var $customPopup = this;
+		$customPopup.css({
+			cursor:"pointer"
+		})
 		this.close = function () {
 			$(popup).stop(true, true).fadeTo(options.duration, 0, function () {
 				$(overlay).fadeTo(options.duration, 0, function () {
@@ -38,15 +41,17 @@ var popupExist = false;
 				});
 			});
 		}
-		var openCustomPopup = function (popupContent) {
-			$(popup).css({top: getPopupTop(popupContent), left: getPopupLeft(popupContent) }).stop(true, true).fadeTo(options.duration, 1);
+		var openCustomPopup = function (popup) {
+			$(popup).css({top: getPopupTop(popup), left: getPopupLeft(popup) }).stop(true, true).fadeTo(options.duration, 1);
 		}
-		var getPopupTop = function (popupContent) {
-			var height = ((((window.innerHeight / 2) - (popupContent.outerHeight() / 2)) * 100) / (window.innerHeight));
+		var getPopupTop = function (popup) {
+			console.log('height:'+popup.height());
+			var height = ((((window.innerHeight / 2) - (popup.height() / 2)) * 100) / (window.innerHeight));
 			return height.toFixed(2) + '%';
 		}
-		var getPopupLeft = function (popupContent) {
-			var width = ((((window.innerWidth / 2) - ((popupContent.outerWidth()) / 2)) * 100) / (window.innerWidth));
+		var getPopupLeft = function (popup) {
+			console.log('width:'+popup.width());
+			var width = ((((window.innerWidth / 2) - ((popup.width()) / 2)) * 100) / (window.innerWidth));
 			return width.toFixed(2) + "%";
 		}
 		var getCssPopup = function () {
@@ -59,13 +64,18 @@ var popupExist = false;
 				backgroundColor: "#000000",
 				zIndex         : 9998
 			});
+			$(popupContainer).css({
+				position: "relative"
+			});
 			$(popup).css({
 				minWidth       : options.minWidth,
 				minHeight      : options.minHeight,
 				maxWidth       : options.maxWidth,
+				maxHeight      : options.maxHeight,
 				backgroundColor: options.background,
+				overflow	   : "auto",
 				position       : "fixed",
-				padding        : 15,
+				padding        : "25px 15px 15px",
 				zIndex         : 9999
 			});
 			$(popup + " ." + closeButtonName).css({
@@ -77,9 +87,7 @@ var popupExist = false;
 				cursor       : "pointer",
 				display      : "block"
 			});
-			$(popupContainer).css({
-				position: "relative"
-			});
+
 		}
 		var createDiv = function () {
 			$(appendPopup).append("<div id='" + popupName + "' style='display:none;'></div>");
@@ -110,7 +118,7 @@ var popupExist = false;
 			if (isHTML(content) && !isSelector(content)) {
 				initPopup();
 				$(popup).append("<div id='" + htmlContentName + "'></div>");
-				$(htmlContent).append(content);
+				$(htmlContent).append(content).addClass(popupContainerName);
 				popupContent = $(htmlContent);
 				isHtmlContent = true;
 				isAjaxContent = false;
@@ -139,8 +147,9 @@ var popupExist = false;
 					$(popup).addClass(options.customClass);
 				}
 				$(popup + ' .' + closeButtonName).on('click', $customPopup.close);
-				getCssPopup();
 				$(popupContainer).show();
+				$()
+				getCssPopup();
 				$(overlay).fadeTo(options.duration, options.opacityOverlay, openCustomPopup($(popup))).stop(true, true).on('click', $customPopup.close);
 				return $customPopup;
 			}
