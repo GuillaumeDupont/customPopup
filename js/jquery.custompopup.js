@@ -45,12 +45,10 @@ var popupExist = false;
 			$(popup).css({top: getPopupTop(popup), left: getPopupLeft(popup) }).stop(true, true).fadeTo(options.duration, 1);
 		}
 		var getPopupTop = function (popup) {
-			console.log('height:'+popup.height());
 			var height = ((((window.innerHeight / 2) - (popup.height() / 2)) * 100) / (window.innerHeight));
 			return height.toFixed(2) + '%';
 		}
 		var getPopupLeft = function (popup) {
-			console.log('width:'+popup.width());
 			var width = ((((window.innerWidth / 2) - ((popup.width()) / 2)) * 100) / (window.innerWidth));
 			return width.toFixed(2) + "%";
 		}
