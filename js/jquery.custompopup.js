@@ -43,6 +43,9 @@ var popupExist = false;
 		}
 		var openCustomPopup = function (popup) {
 			$(popup).css({top: getPopupTop(popup), left: getPopupLeft(popup) }).stop(true, true).fadeTo(options.duration, 1);
+			$(window).resize(function(){
+				$(popup).css({top: getPopupTop(popup), left: getPopupLeft(popup) });
+			})
 		}
 		var getPopupTop = function (popup) {
 			var height = ((((window.innerHeight / 2) - (popup.height() / 2)) * 100) / (window.innerHeight));
@@ -50,7 +53,7 @@ var popupExist = false;
 		}
 		var getPopupLeft = function (popup) {
 			var width = ((((window.innerWidth / 2) - ((popup.width()) / 2)) * 100) / (window.innerWidth));
-			return width.toFixed(2) + "%";
+			return width.toFixed(2) + '%';
 		}
 		var getCssPopup = function () {
 			$(overlay).css({

@@ -8,7 +8,9 @@
         $(document).ready(function(){
             var html = '<div id="welcome">Bonjour, Identifiez-vous<div id="loginform">                    <form action="http://www.comptoirdelhomme.local/customer/account/loginPost/" method="post" id="login-form">                    <input type="text" name="login[username]" id="login" placeholder="email"><br>                    <input type="password" name="login[password]" id="password" placeholder="mot de passe"><br>                    <div class="right">                    <a href="/customer/account/forgotpassword/">mot de passe oublié</a>            </div>            <div class="clear"></div>            <div class="center">                    <button type="submit" title="Connexion" class="button">                    <span>                    <span>&gt; Connexion</span>            </span>            </button>            </div>            </form>            <div class="clear"></div>                    <br>                    <hr>            <span class="create-account"><a href="/customer/account/create/">Créer mon compte</a> <img src="http://www.comptoirdelhomme.local/skin/frontend/cdh/default/images/right-arrow-black.png"></span>            </div>            </div>';
             $("#link").popin('popup.html');
-            bujur = $("#link2").popin('.plutotlourd');
+            bujur = $("#link2").popin('.plutotlourd',{
+                opacityOverlay: 0.45
+            });
             $("#link3").popin(html);
         });
     </script>
