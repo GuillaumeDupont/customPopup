@@ -111,15 +111,18 @@ var popupExist = false;
 			}
 			return;
 		}
+		var contentSetup = function(isAjax, isHtml, popupContent){
+			this.isAjax = isAjax;
+			this.isHtml = isHtml;
+			this.popupContent = $(popupContent);
+			return this;
+		}
 		this.open = function () {
-			var popupContent, isAjaxContent, isHtmlContent;
 			if (isHTML(content) && !isSelector(content)) {
 				initPopup();
 				$(popup).append("<div id='" + htmlContentName + "'></div>");
 				$(htmlContent).append(content).addClass(popupContainerName);
-				popupContent = $(htmlContent);
-				isHtmlContent = true;
-				isAjaxContent = false;
+				var contents = contentSetup(false, true,htmlContent);
 			} else if (!isSelector(content) && !isHTML(content)) {
 				initPopup();
 				$(popup).append("<div id='" + ajaxContentName + "'></div>");
@@ -128,17 +131,14 @@ var popupExist = false;
 						$(this).append('<p>' + errorMsg + " : " + xhr.status + " " + xhr.statusText + '</p>');
 					}
 				}).addClass(popupContainerName);
-				popupContent = $(ajaxContent);
-				isHtmlContent = false;
-				isAjaxContent = true;
+				var contents = contentSetup(true, false,ajaxContent);
 			} else if (isSelector(content)) {
-				popupContent = $(content);
-				isAjaxContent = isHtmlContent = false;
+				var contents = contentSetup(false, false,content);
 			}
-			if (popupContent.length > 0) {
+			if (contents.popupContent.length > 0) {
 				initPopup();
-				if (!isAjaxContent && !isHtmlContent && $(popup + ' ' + content).length == 0) {
-					popupContent.clone().appendTo(popup).addClass(popupContainerName);
+				if (!contents.isAjax && !contents.isHtml && $(popup + ' ' + content).length == 0) {
+					contents.popupContent.clone().appendTo(popup).addClass(popupContainerName);
 				}
 				$(popup).append('<span class="' + closeButtonName + '">X</span>');
 				if (options.customClass != null) {
