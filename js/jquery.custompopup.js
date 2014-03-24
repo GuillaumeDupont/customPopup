@@ -3,7 +3,7 @@
  */
 var popupExist = false;
 (function ($) {
-	$.fn.customPopup = function (content, params) {
+	$.fn.popup = function (content, params) {
 		var options = {
 			customClass    : null,
 			opacityOverlay : 0.65,
