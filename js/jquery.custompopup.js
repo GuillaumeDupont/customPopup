@@ -21,6 +21,7 @@ var popupExist = false;
 		var htmlContentName = "htmlContent";
 		var appendPopup = "body";
 		var popupName = "custom-popup";
+		var name = "Winny";
 		var overlayName = popupName + "-overlay";
 		var popupContainerName = popupName + "-content";
 		var popup = "#" + popupName;
@@ -146,7 +147,7 @@ var popupExist = false;
 				}
 				$(popup + ' .' + closeButtonName).on('click', $customPopup.close);
 				$(popupContainer).show();
-				$()
+				console.log(name);
 				getCssPopup();
 				$(overlay).fadeTo(options.duration, options.opacityOverlay, openCustomPopup($(popup))).stop(true, true).on('click', $customPopup.close);
 				return $customPopup;
